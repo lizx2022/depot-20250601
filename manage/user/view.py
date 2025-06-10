@@ -120,13 +120,22 @@ def info():
 
 
 
-
 @user_bp.route('/refresh')
 @jwt_required(refresh=True  )
 def refresh():
     identity1=get_jwt_identity()
     access_token=create_access_token(identity=identity1)
     return to_dict_msg(200,{"access_token":access_token})
-#token失效后，可以通过refresh 重新获得token
+#token失效后，可以通过refresh 重新获得token ,类方法来实现TOKEN查询 。
+class UserLogininfo(Resource):
+    method_decorators = {
+        'get':[jwt_required()],
+    }
+    def get(self):
+        identity = get_jwt_identity()
+        if identity is None:
+            return to_dict_msg(10021)
+        return to_dict_msg(10022,msg=identity)
 
+api.add_resource(UserLogininfo, '/userinfo',endpoint='v_userinfo')
 
